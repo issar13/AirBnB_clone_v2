@@ -1,30 +1,28 @@
 #!/usr/bin/python3
-"""
-Deploying tgz file to our servers
-"""
+"""web server distribution"""
+from fabric.api import *
+import os.path
 
-from fabric.api import put, run, env
-from os.path import exists
-env.hosts = ['34.73.133.125', '52.201.252.232']
+env.user = 'ubuntu'
+env.hosts = ['44.210.103.220', '35.168.59.18']
 
 
 def do_deploy(archive_path):
-    """deploy web static with fabric"""
-    if exists(archive_path) is False:
+    """distributes an archive to your web servers
+    """
+    if os.path.exists(archive_path) is False:
         return False
-
     try:
-        filename = archive_path.split("/")[-1]
-        no_excep = filename.split(".")[0]
-        path = "/data/web_static/releases/"
+        arc = archive_path.split("/")
+        base = arc[1].strip('.tgz')
         put(archive_path, '/tmp/')
-        run('sudo mkdir -p {}{}/'.format(path, no_excep))
-        run('sudo tar -xzf /tmp/{} -C {}{}/'.format(filename, path, no_excep))
-        run('sudo rm /tmp/{}'.format(filename))
-        run('sudo mv {0}{1}/web_static/* {0}{1}/'.format(path, no_excep))
-        run('sudo rm -rf {}{}/web_static'.format(path, no_excep))
-        run('sudo rm -rf /data/web_static/current')
-        run('sudo ln -s {}{}/ /data/web_static/current'.format(path, no_excep))
+        sudo('mkdir -p /data/web_static/releases/{}'.format(base))
+        main = "/data/web_static/releases/{}".format(base)
+        sudo('tar -xzf /tmp/{} -C {}/'.format(arc[1], main))
+        sudo('rm /tmp/{}'.format(arc[1]))
+        sudo('mv {}/web_static/* {}/'.format(main, main))
+        sudo('rm -rf /data/web_static/current')
+        sudo('ln -s {}/ "/data/web_static/current"'.format(main))
         return True
-    except BaseException:
+    except:
         return False
