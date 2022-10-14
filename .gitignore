@@ -18,3 +18,4 @@ __pycache__
 web_flask/__pycache__/
 issar13
 issar13.pub
+fabfile.py
