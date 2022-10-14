@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 """web server distribution"""
-from fabric.api import *
+from fabric.api import put, run, env, sudo
 import os.path
+import paramiko
 
-env.user = 'ubuntu'
 env.hosts = ['44.210.103.220', '35.168.59.18']
+env.password = {'ubuntu@44.210.103.220': 'krusher13',
+                'ubuntu@35.168.59.18': 'krusher13',}
 
 
 def do_deploy(archive_path):
